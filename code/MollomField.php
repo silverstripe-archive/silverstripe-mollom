@@ -122,7 +122,7 @@ class MollomField extends SpamProtecterField {
 		if (isset($_REQUEST[$this->fieldToPostTitle])) $postTitle = $_REQUEST[$this->fieldToPostTitle];
 		
 		if (!is_array($this->fieldsToPostBody)) {
-			$fieldsToCheck = $this->fieldsToPostBody;
+			$postBody = $_REQUEST[$this->fieldsToPostBody];
 		}
 		else {
 			$fieldsToCheck = array_intersect( $this->fieldsToPostBody, array_keys($_REQUEST) );	
