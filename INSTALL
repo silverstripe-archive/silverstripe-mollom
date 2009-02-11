@@ -19,45 +19,32 @@ inside Mollom module directory ('mollom/_config.php') with your favourite text e
 Read the instructions below to setup the initial configuration of the module.
 
 
-SETTING UP THE MOLLOM API KEY (in 'mollom/_config.php')
+SETTING UP THE MOLLOM API KEY (in 'mysite/_config.php')
 ------------------------------------------------------
+
+Copy this code into your mysite/_config.php file, and eplace the strings
+"enter-your-mollom-public-key" and "enter-your-mollom-private-key" 
+with the public key and private key you obtained from Mollom (http://mollom.com/)
 
 <<<< CODE STARTS >>>>
 
-// Replace the string "enter-your-mollom-public-key" and "enter-your-mollom-private-key" 
-// with the public key and private key you obtained from Mollom (http://mollom.com/)
-
 Mollom::setPublicKey("enter-your-mollom-public-key");
-
 Mollom::setPrivateKey("enter-your-mollom-private-key");
+SpamProtecterManager::set_spam_protecter('MollomSpamProtector');
 
 <<<< CODE ENDS >>>>
 
 What does this do?
 ------------------
-
-These lines of code setup public and private keys that are required for the module to interact with Mollom service. 
-
-SETTING UP THE SPAMPROTECTION MODULE TO USE THIS MODULE (in 'mysite/_config.php')
--------------------------------------------------------------------------------
-
-Make sure you have 'SpamProtection' module already install
-
-<<<< CODE STARTS >>>>
-
-SpamProtecterManager::set_spam_protecter('MollomField');
-
-<<<< CODE ENDS >>>>
-
-What does this do? 
-------------------
-
-This tell 'SpamProtection' module that you want to use 'MollomField' as a spam protection module across your site
+This tell 'SpamProtection' module that you want to use 'MollomField' as a spam
+protection module across your site, and set up the public and private keys that
+are required for the module to interact with Mollom service. 
 
 SETTING UP A FROM WITH A MOLLOM FIELD 
 -------------------------------------
 
-Suppose you create a contact form in a page type called 'ContactPage.php' (in 'mysite/code')
+Suppose you create a contact form in a page type called 'ContactPage.php' 
+(in 'mysite/code')
 
 <<<< CODE STARTS >>>>
 
@@ -70,7 +57,7 @@ function ContactForm() {
       	new TextField("Name", "Name"),
 		new EmailField("Email",  "Email"),
 		new TextField("Website", "Website"),
-		new TextareaField("Message", "Message")
+		new TextareaField("Content", "Message")
   	);
 
 	$actions = new FieldSet(
@@ -80,14 +67,12 @@ function ContactForm() {
   	$form = new Form($this, "TestForm", $fields, $actions);
 	
 	// Update the form to add the protecter field to it
-	$protecterField = SpamProtecterManager::update_form('MollomField', 'Captcha', $form);
+	$protecterField = SpamProtecterManager::update_form($form);
 	
-	/**
-	 * Tell the module to use Title, Message, Name, Website, Email fields
-	 * as post title, post body, author name, author url, and author email, respectively,
-	 * to do spam checking against Mollom service
-	 */
-	$protecterField->setFieldMapping('Title', 'Message', 'Name', 'Website', 'Email');
+	// Tell the module to use Title, Message, Name, Website, Email fields
+	// as post title, post body, author name, author url, and author email, respectively,
+	// to do spam checking against Mollom service
+	$protecterField->setFieldMapping('Title', 'Content', 'Name', 'Website', 'Email');
 }
 
 <<<< CODE ENDS >>>>
@@ -95,6 +80,13 @@ function ContactForm() {
 What does this do?
 ------------------
 
-This setup a contact form with a mollom field. When page first loaded, it displays a normal form without the protector field. 
+This setup a contact form with a mollom field. When page first loaded, it displays
+a normal form without the protector field. 
 
-After user fills the form and submits it, the content of the form is sent to Mollom service for spam checking. If Mollom service verifies that the submission is not a spam, the control will pass on to doContactForm() function. If the service says the submission is a spam, user will be redirected to the homepage without further processing with the form data. On the other hand, if the service is not sure whether the submission is a spam or a ham, user will be presented with Captcha image and audio and a text field for issuing the Captcha solution. 
+After user fills the form and submits it, the content of the form is sent to Mollom
+service for spam checking. If Mollom service verifies that the submission is not a
+spam, the control will pass on to doContactForm() function. If the service says the
+submission is a spam, user will be redirected to the homepage without further 
+processing with the form data. On the other hand, if the service is not sure whether
+the submission is a spam or a ham, user will be presented with Captcha image and
+audio and a text field for issuing the Captcha solution. 

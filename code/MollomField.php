@@ -93,7 +93,6 @@ class MollomField extends SpamProtecterField {
 			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
 			if ($mollom_session_id && Mollom::checkCaptcha($mollom_session_id, $this->Value())) {
 				$this->clearMollomSession();
-				Director::redirectBack();
 				return true;
 			}
 			else {
@@ -153,8 +152,6 @@ class MollomField extends SpamProtecterField {
 		if ($response['spam'] == 'ham') {
 			$this->clearMollomSession();
 			$validator->validationError($this->name,'','good'); 
-
-			//Director::redirectBack();
 			return true;
 		} 
 		else if ($response['spam'] == 'unsure') {
@@ -177,7 +174,6 @@ class MollomField extends SpamProtecterField {
 		else {
 			$this->clearMollomSession();
 			// TODO: maybe there's a better way to hadle this 
-			Director::redirect( Director::baseURL() );
 			return false;
 		}	
 	}
