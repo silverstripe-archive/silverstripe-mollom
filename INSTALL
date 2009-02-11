@@ -45,7 +45,7 @@ Make sure you have 'SpamProtection' module already install
 
 <<<< CODE STARTS >>>>
 
-SpamProctecterManager::set_spam_protecter('MollomField');
+SpamProtecterManager::set_spam_protecter('MollomField');
 
 <<<< CODE ENDS >>>>
 
@@ -80,7 +80,7 @@ function ContactForm() {
   	$form = new Form($this, "TestForm", $fields, $actions);
 	
 	// Update the form to add the protecter field to it
-	$protecterField = SpamProctecterManager::update_form('MollomField', 'Captcha', $form);
+	$protecterField = SpamProtecterManager::update_form('MollomField', 'Captcha', $form);
 	
 	/**
 	 * Tell the module to use Title, Message, Name, Website, Email fields
