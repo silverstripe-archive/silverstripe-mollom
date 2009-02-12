@@ -7,7 +7,7 @@ class MollomSpamProtector {
 	protected $mollomField;
 	
 	function updateForm($form, $before=null, $callbackObject=null, $fieldsToSpamServiceMapping=null) {
-		$this->mollomField = new MollomField("MollomField", "Captcha");
+		$this->mollomField = new MollomField("MollomField", "Captcha", null, $form);
 		$this->mollomField->setCallbackObject($callbackObject);
 		
 		if ($before && $form->Fields()->fieldByName($before)) {
