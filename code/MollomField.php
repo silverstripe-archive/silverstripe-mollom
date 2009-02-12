@@ -31,7 +31,7 @@ class MollomField extends SpamProtecterField {
 	function __construct($name, $title = null, $value = null, $form = null, $rightTitle = null) {
 		parent::__construct($name, $title = null, $value = null, $form = null, $rightTitle = null);
 		
-		Mollom::setServerList(MollomServer::getServerList());
+		MollomServer::initServerList();
 	}
 	
 	function Field() {
@@ -50,8 +50,8 @@ class MollomField extends SpamProtecterField {
 		
 		if (Session::get('mollom_captcha_requested') || empty($this->fieldsToPostBody)) {
 			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
-			$imageCaptcha = Mollom::getImageCaptcha($mollom_session_id);
-			$audioCaptcha = Mollom::getAudioCaptcha($imageCaptcha['session_id']);
+			$imageCaptcha = MollomServer::getImageCaptcha($mollom_session_id);
+			$audioCaptcha = MollomServer::getAudioCaptcha($imageCaptcha['session_id']);
 				
 			$captchaHtml = '<div class="mollom-captcha">';
 			$captchaHtml .= '<span class="mollom-image-captcha">' . $imageCaptcha['html'] . '</span>';
@@ -92,7 +92,7 @@ class MollomField extends SpamProtecterField {
 		if ( (Session::get('mollom_captcha_requested') && trim($this->Value()) != '') ||
 			 empty($this->fieldsToPostBody) ) {
 			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
-			if ($mollom_session_id && Mollom::checkCaptcha($mollom_session_id, $this->Value())) {
+			if ($mollom_session_id && MollomServer::checkCaptcha($mollom_session_id, $this->Value())) {
 				$this->clearMollomSession();
 				return true;
 			}
@@ -143,7 +143,7 @@ class MollomField extends SpamProtecterField {
 		$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
 		
 		// check the submitted content against Mollom web service
-		$response = Mollom::checkContent($mollom_session_id, $postTitle, $postBody, $authorName, $authorUrl, $authorEmail, $authorOpenId);
+		$response = MollomServer::checkContent($mollom_session_id, $postTitle, $postBody, $authorName, $authorUrl, $authorEmail, $authorOpenId);
 
 		Session::set("mollom_session_id", $response['session_id']);
 		

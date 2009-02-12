@@ -34,5 +34,28 @@ class MollomServer extends DataObject {
 		
 		return $servers;
 	}
+	
+	/**
+	 * @param 	array of server urls
+	 */
+	static function initServerList() {
+		Mollom::setServerList(self::getServerList()); 
+	}
+	
+	static function getImageCaptcha($sessionId=null) {
+		return Mollom::getImageCaptcha($sessionId);
+	}
+	
+	static function getAudioCaptcha($sessionId=null) {
+		return Mollom::getAudioCaptcha($sessionId);
+	}
+	
+	static function checkCaptcha($sessionId, $solution) {
+		return Mollom::checkCaptcha($sessionId, $solution);
+	}
+	
+	static function checkContent($session_id=null, $postTitle=null, $postBody=null, $authorName=null, $authorUrl=null, $authorEmail=null, $authorOpenId=null) {
+		return Mollom::checkContent($session_id, $postTitle, $postBody, $authorName, $authorUrl, $authorEmail, $authorOpenId);
+	}
 }
 ?>
