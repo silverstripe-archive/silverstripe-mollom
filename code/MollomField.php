@@ -48,7 +48,7 @@ class MollomField extends SpamProtecterField {
 		
 		$html = $this->createTag('input', $attributes);
 		
-		if (Session::get('mollom_captcha_requested')) {
+		if (Session::get('mollom_captcha_requested') || empty($this->fieldsToPostBody)) {
 			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
 			$imageCaptcha = Mollom::getImageCaptcha($mollom_session_id);
 			$audioCaptcha = Mollom::getAudioCaptcha($imageCaptcha['session_id']);
@@ -65,7 +65,7 @@ class MollomField extends SpamProtecterField {
 	}
 	
 	function FieldHolder() {
-		if (Session::get('mollom_captcha_requested')) {
+		if (Session::get('mollom_captcha_requested') || empty($this->fieldsToPostBody)) {
 			return parent::FieldHolder();
 		}
 		return null;
@@ -89,7 +89,8 @@ class MollomField extends SpamProtecterField {
 		}
 	
 		// Check captcha solution if user has submitted a solution
-		if (Session::get('mollom_captcha_requested') && trim($this->Value()) != '') {
+		if ( (Session::get('mollom_captcha_requested') && trim($this->Value()) != '') ||
+			 empty($this->fieldsToPostBody) ) {
 			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
 			if ($mollom_session_id && Mollom::checkCaptcha($mollom_session_id, $this->Value())) {
 				$this->clearMollomSession();
