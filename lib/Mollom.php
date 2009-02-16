@@ -619,7 +619,9 @@ class Mollom
 		return self::$serverList;
 	}
 
-
+	public static function getPublicKey() {
+		return self::$publicKey;
+	}
 	/**
 	 * Retrieve statistics from Mollom
 	 *
