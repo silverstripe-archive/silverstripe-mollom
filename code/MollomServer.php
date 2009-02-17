@@ -35,6 +35,10 @@ class MollomServer extends DataObject {
 		return $servers;
 	}
 	
+	static function verifyKey() {
+		return Mollom::verifyKey();
+	}
+	
 	/**
 	 * @param 	array of server urls
 	 */

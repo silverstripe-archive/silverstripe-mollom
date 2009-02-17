@@ -72,7 +72,7 @@ function ContactForm() {
 	// Tell the module to use Title, Message, Name, Website, Email fields
 	// as post title, post body, author name, author url, and author email, respectively,
 	// to do spam checking against Mollom service
-	$protecter->setFieldMapping('Title', 'Content', 'Name', 'Website', 'Email');
+	if($protecter) $protecter->setFieldMapping('Title', 'Content', 'Name', 'Website', 'Email');
 }
 
 <<<< CODE ENDS >>>>

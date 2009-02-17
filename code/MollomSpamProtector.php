@@ -6,7 +6,13 @@
 class MollomSpamProtector {
 	protected $mollomField;
 	
+	/**
+	 * @return false if the field creation fails 
+	 */
 	function updateForm($form, $before=null, $callbackObject=null, $fieldsToSpamServiceMapping=null) {
+		// check mollom keys before adding field to form
+		if (!MollomServer::verifyKey()) return false;
+		
 		$this->mollomField = new MollomField("MollomField", "Captcha", null, $form);
 		$this->mollomField->setCallbackObject($callbackObject);
 		
@@ -16,6 +22,8 @@ class MollomSpamProtector {
 		else { 
 			$form->Fields()->push($this->mollomField);
 		}
+		
+		return true;
 	}
 	
 	function setFieldMapping($fieldToPostTitle, $fieldsToPostBody, $fieldToAuthorName=null, $fieldToAuthorUrl=null, $fieldToAuthorEmail=null, $fieldToAuthorOpenId=null) {
