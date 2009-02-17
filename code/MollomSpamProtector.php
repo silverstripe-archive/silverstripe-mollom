@@ -11,6 +11,7 @@ class MollomSpamProtector {
 	 */
 	function updateForm($form, $before=null, $callbackObject=null, $fieldsToSpamServiceMapping=null) {
 		// check mollom keys before adding field to form
+		MollomServer::initServerList();
 		if (!MollomServer::verifyKey()) return false;
 		
 		$this->mollomField = new MollomField("MollomField", "Captcha", null, $form);

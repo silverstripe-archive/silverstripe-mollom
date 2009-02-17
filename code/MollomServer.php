@@ -1,6 +1,7 @@
 <?php
 /** 
  * This class is responsible for caching a list of Mollom servers
+ * @TODO: try and catch every remote method call
  */
 class MollomServer extends DataObject {
 	static $db = array(
