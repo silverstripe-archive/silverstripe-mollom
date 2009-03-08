@@ -20,11 +20,11 @@ class MollomSpamProtector {
 		if ($before && $form->Fields()->fieldByName($before)) {
 			$form->Fields()->insertBefore($this->mollomField, $before);
 		}
-		else { 
+		else {
 			$form->Fields()->push($this->mollomField);
 		}
 		
-		return true;
+		return $form->Fields();
 	}
 	
 	function setFieldMapping($fieldToPostTitle, $fieldsToPostBody, $fieldToAuthorName=null, $fieldToAuthorUrl=null, $fieldToAuthorEmail=null, $fieldToAuthorOpenId=null) {

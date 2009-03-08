@@ -29,8 +29,7 @@ class MollomField extends SpamProtecterField {
 	}
 	
 	function __construct($name, $title = null, $value = null, $form = null, $rightTitle = null) {
-		parent::__construct($name, $title = null, $value = null, $form = null, $rightTitle = null);
-		
+		parent::__construct($name, $title, $value, $form, $rightTitle);
 		MollomServer::initServerList();
 	}
 	
@@ -41,13 +40,13 @@ class MollomField extends SpamProtecterField {
 			'id' => $this->id(),
 			'name' => $this->Name(),
 			'value' => $this->Value(),
+			'title' => $this->Title(),
 			'tabindex' => $this->getTabIndex(),
 			'maxlength' => ($this->maxLength) ? $this->maxLength : null,
 			'size' => ($this->maxLength) ? min( $this->maxLength, 30 ) : null 
 		);
 		
 		$html = $this->createTag('input', $attributes);
-		
 		if (Session::get('mollom_captcha_requested') || empty($this->fieldsToPostBody)) {
 			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
 			$imageCaptcha = MollomServer::getImageCaptcha($mollom_session_id);
