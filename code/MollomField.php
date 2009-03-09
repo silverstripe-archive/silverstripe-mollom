@@ -51,6 +51,8 @@ class MollomField extends SpamProtecterField {
 			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
 			$imageCaptcha = MollomServer::getImageCaptcha($mollom_session_id);
 			$audioCaptcha = MollomServer::getAudioCaptcha($imageCaptcha['session_id']);
+			
+			Session::set("mollom_session_id", $imageCaptcha['session_id']);
 				
 			$captchaHtml = '<div class="mollom-captcha">';
 			$captchaHtml .= '<span class="mollom-image-captcha">' . $imageCaptcha['html'] . '</span>';
@@ -91,6 +93,7 @@ class MollomField extends SpamProtecterField {
 		if ( (Session::get('mollom_captcha_requested') && trim($this->Value()) != '') ||
 			 empty($this->fieldsToPostBody) ) {
 			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
+		
 			if ($mollom_session_id && MollomServer::checkCaptcha($mollom_session_id, $this->Value())) {
 				$this->clearMollomSession();
 				return true;
