@@ -176,6 +176,17 @@ class MollomField extends SpamProtecterField {
 		} 
 		else {
 			$this->clearMollomSession();
+			$validator->validationError(
+				$this->name, 
+				_t(
+					'MollomCaptchaField.SPAM', 
+					"Your submission was treated as spam.",
+					PR_MEDIUM,
+					"Mollom Captcha provides words in an image, and expects a user to type them in a textfield"
+			), 
+				"validation", 
+				false
+			);
 			// TODO: maybe there's a better way to hadle this 
 			return false;
 		}	
