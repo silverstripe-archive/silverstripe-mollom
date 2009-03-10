@@ -47,7 +47,7 @@ class MollomField extends SpamProtecterField {
 		);
 		
 		$html = $this->createTag('input', $attributes);
-		if (Session::get('mollom_captcha_requested') || empty($this->fieldsToPostBody)) {
+		if ((Session::get('mollom_captcha_requested') || empty($this->fieldsToPostBody))) {
 			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
 			$imageCaptcha = MollomServer::getImageCaptcha($mollom_session_id);
 			$audioCaptcha = MollomServer::getAudioCaptcha($imageCaptcha['session_id']);
@@ -66,7 +66,7 @@ class MollomField extends SpamProtecterField {
 	}
 	
 	function FieldHolder() {
-		if (Session::get('mollom_captcha_requested') || empty($this->fieldsToPostBody)) {
+		if ((Session::get('mollom_captcha_requested') || empty($this->fieldsToPostBody)) && !Permission::check('ADMIN')) {
 			return parent::FieldHolder();
 		}
 		return null;
@@ -85,7 +85,7 @@ class MollomField extends SpamProtecterField {
 	function validate($validator) {
 
 		if (Permission::check('ADMIN')) {
-			$validator->validationError($this->name,'','good'); 
+			$this->clearMollomSession();
 			return true;
 		}
 	
@@ -154,7 +154,6 @@ class MollomField extends SpamProtecterField {
 
 		if ($response['spam'] == 'ham') {
 			$this->clearMollomSession();
-			$validator->validationError($this->name,'','good'); 
 			return true;
 		} 
 		else if ($response['spam'] == 'unsure') {
@@ -165,9 +164,8 @@ class MollomField extends SpamProtecterField {
 					"Please answer the captcha question",
 					PR_MEDIUM,
 					"Mollom Captcha provides words in an image, and expects a user to type them in a textfield"
-			), 
-				"validation", 
-				false
+				), 
+				"warning"
 			);
 			
 			Session::set('mollom_captcha_requested', true);
@@ -180,14 +178,13 @@ class MollomField extends SpamProtecterField {
 				$this->name, 
 				_t(
 					'MollomCaptchaField.SPAM', 
-					"Your submission was treated as spam.",
+					"Your submission has been rejected because it was treated as spam.",
 					PR_MEDIUM,
 					"Mollom Captcha provides words in an image, and expects a user to type them in a textfield"
-			), 
-				"validation", 
-				false
+				), 
+				"error"
 			);
-			// TODO: maybe there's a better way to hadle this 
+
 			return false;
 		}	
 	}
