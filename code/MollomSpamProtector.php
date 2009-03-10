@@ -27,7 +27,7 @@ class MollomSpamProtector {
 		return $form->Fields();
 	}
 	
-	function setFieldMapping($fieldToPostTitle, $fieldsToPostBody, $fieldToAuthorName=null, $fieldToAuthorUrl=null, $fieldToAuthorEmail=null, $fieldToAuthorOpenId=null) {
+	function setFieldMapping($fieldToPostTitle, $fieldsToPostBody=null, $fieldToAuthorName=null, $fieldToAuthorUrl=null, $fieldToAuthorEmail=null, $fieldToAuthorOpenId=null) {
 		$this->mollomField->setFieldMapping($fieldToPostTitle, $fieldsToPostBody, $fieldToAuthorName, $fieldToAuthorUrl, $fieldToAuthorEmail, $fieldToAuthorOpenId);
 	}
 	
