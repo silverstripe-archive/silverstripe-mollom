@@ -3,20 +3,19 @@
 /**
  * SpamProtector that implements Mollom spam protection
  */
-class MollomSpamProtector {
+class MollomSpamProtector implements SpamProtector {
 	protected $mollomField;
 	
 	/**
 	 * @return false if the field creation fails 
 	 */
-	function updateForm($form, $before=null, $callbackObject=null, $fieldsToSpamServiceMapping=null) {
+	function updateForm($form, $before=null, $fieldsToSpamServiceMapping=null) {
 		// check mollom keys before adding field to form
 		MollomServer::initServerList();
 		if (!MollomServer::verifyKey()) return false;
 		
 		$this->mollomField = new MollomField("MollomField", "Captcha", null, $form);
-		$this->mollomField->setCallbackObject($callbackObject);
-		
+
 		if ($before && $form->Fields()->fieldByName($before)) {
 			$form->Fields()->insertBefore($this->mollomField, $before);
 		}
@@ -32,16 +31,25 @@ class MollomSpamProtector {
 	}
 	
 	/**
-	 * Mark Item as Spam. 
+	 * Send Feedback about a Object to the Mollom Service. Note that Mollom does not
+	 * want to know about ham (or valid entries) so the only valid feedback is what
+	 * level of spam it is, Which we currently do not support.
 	 * 
-	 * @todo {@link Mollom::sendFeedback()} second parameter accepts
-	 * different request types. spam, profanity, low-quality, unwanted yet we 
-	 * only tag them as SPAM.
+	 * @param DataObject The DataObject which you want to send feedback about
+	 * @param String Feedback information
+	 * 
+	 * @return bool Whether feedback was sent
 	 */
-	function markAsSpam() {
-		$sessionID = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
-		MollomServer::initServerList();
-		return Mollom::sendFeedback($sessionID, 'spam');
+	function sendFeedback($object = null, $feedback = "") {
+		if($object) {
+			if($object->hasField('SessionID')) {
+				if(in_array($feedback, array('spam', 'profanity', 'low-quality', 'unwanted'))) {
+					MollomServer::initServerList();
+					return Mollom::sendFeedback($object->SessionID, $feedback);
+				}
+			}
+		}
+		return false;
 	}
 }
 

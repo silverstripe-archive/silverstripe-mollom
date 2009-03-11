@@ -83,17 +83,16 @@ class MollomField extends SpamProtecterField {
 	 *       				  so that Field() knows it's time to display captcha 			
 	 */
 	function validate($validator) {
-
-		if (Permission::check('ADMIN')) {
+		
+		// If the user is ADMIN let them post comments without checking
+		if(Permission::check('ADMIN')) {
 			$this->clearMollomSession();
 			return true;
 		}
-	
-		// Check captcha solution if user has submitted a solution
-		if ( (Session::get('mollom_captcha_requested') && trim($this->Value()) != '') ||
-			 empty($this->fieldsToPostBody) ) {
-			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
 		
+		// Check captcha solution if user has submitted a solution
+		if((Session::get('mollom_captcha_requested') && trim($this->Value()) != '') || empty($this->fieldsToPostBody) ) {
+			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
 			if ($mollom_session_id && MollomServer::checkCaptcha($mollom_session_id, $this->Value())) {
 				$this->clearMollomSession();
 				return true;
@@ -113,7 +112,6 @@ class MollomField extends SpamProtecterField {
 				return false;
 			}
 		}
-		
 		$postTitle = null;
 		$postBody = null;
 		$authorName = null;
@@ -147,15 +145,16 @@ class MollomField extends SpamProtecterField {
 		// check the submitted content against Mollom web service
 		$response = MollomServer::checkContent($mollom_session_id, $postTitle, $postBody, $authorName, $authorUrl, $authorEmail, $authorOpenId);
 
+		// save the session ids in the session as we use them in the form returned
 		Session::set("mollom_session_id", $response['session_id']);
+		Session::set("mollom_user_session_id", $response['session_id']);
 		
-		/* notity spam control callback objectect */
-		//$this->notifyCallbackObject($response);
-
+		// response was fine, let it pass through 
 		if ($response['spam'] == 'ham') {
 			$this->clearMollomSession();
 			return true;
 		} 
+		// response is SPAM. Stop and throw an error
 		else if ($response['spam'] == 'unsure') {
 			$validator->validationError(
 				$this->name, 
@@ -169,9 +168,9 @@ class MollomField extends SpamProtecterField {
 			);
 			
 			Session::set('mollom_captcha_requested', true);
-			
 			return false;
-		} 
+		}
+		// Mollom has detected spam!
 		else {
 			$this->clearMollomSession();
 			$validator->validationError(
@@ -189,6 +188,9 @@ class MollomField extends SpamProtecterField {
 		}	
 	}
 	
+	/**
+	 * Helper to quickly clear all the mollom session settings. For example after a successful post
+	 */
 	private function clearMollomSession() {
 		Session::clear('mollom_session_id');
 		Session::clear('mollom_captcha_requested');

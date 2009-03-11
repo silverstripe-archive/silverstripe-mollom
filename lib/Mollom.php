@@ -612,7 +612,7 @@ class Mollom
 
 		// loop servers and add them
 		foreach ($responseString->params->param->value->array->data->value as $server) self::$serverList[] = (string) $server->string;
-
+		Debug::show($serverList);
 		if(count(self::$serverList) == 0) self::$serverList = array('http://xmlrpc3.mollom.com', 'http://xmlrpc2.mollom.com', 'http://xmlrpc1.mollom.com');
 
 		// return
