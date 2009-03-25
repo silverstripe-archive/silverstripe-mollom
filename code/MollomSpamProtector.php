@@ -4,10 +4,22 @@
  * SpamProtector that implements Mollom spam protection
  */
 class MollomSpamProtector implements SpamProtector {
+	
 	protected $mollomField;
 	
 	/**
-	 * @return false if the field creation fails 
+	 * Return the Field that we will use in this protector
+	 * 
+	 * @return string
+	 */
+	function getFieldName() {
+		return 'MollomField';
+	}
+	
+	/**
+	 * Update a form with the Mollom Field Protection
+	 * 
+	 * @return bool 
 	 */
 	function updateForm($form, $before=null, $fieldsToSpamServiceMapping=null) {
 		// check mollom keys before adding field to form
