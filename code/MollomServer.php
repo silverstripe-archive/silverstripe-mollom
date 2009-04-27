@@ -32,7 +32,7 @@ class MollomServer extends DataObject {
 	}
 	
 	static function getServerList() {
-		if (self::getCachedServerList()) return self::getCachedServerList();
+		if($list = self::getCachedServerList()) return $list;
 		
 		$servers = self::doCall("getServerList", null);
 		
