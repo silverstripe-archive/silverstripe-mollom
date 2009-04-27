@@ -78,17 +78,6 @@ class Mollom
 	 */
 	private static $reverseProxy = false;
 
-
-	/**
-	 * The default server
-	 *
-	 * No need to change
-	 *
-	 * @var	string
-	 */
-	private static $serverHost = 'xmlrpc.mollom.com';
-
-
 	/**
 	 * The cache for the serverlist
 	 *
@@ -605,13 +594,20 @@ class Mollom
 	public static function getServerList($counter = 0)
 	{
 		// do the call
-		$responseString = self::doCall('getServerList', array(), self::$serverHost, $counter);
+		foreach(array('xmlrpc1.mollom.com', 'xmlrpc2.mollom.com', 'xmlrpc3.mollom.com') as $startingServer) {
+			try {
+				$responseString = self::doCall('getServerList', array(), $startingServer, $counter);
+			} catch(Exception $e) {
+				continue;
+			}
 
-		// validate
-		if(!isset($responseString->params->param->value->array->data->value)) throw new Exception('Invalid response in getServerList.');
-
-		// loop servers and add them
-		foreach ($responseString->params->param->value->array->data->value as $server) self::$serverList[] = (string) $server->string;
+			// validate
+			if(isset($responseString->params->param->value->array->data->value)) {
+				// loop servers and add them
+				foreach ($responseString->params->param->value->array->data->value as $server) self::$serverList[] = (string) $server->string;
+				break;
+			}
+		}
 
 		if(count(self::$serverList) == 0) self::$serverList = array('http://xmlrpc3.mollom.com', 'http://xmlrpc2.mollom.com', 'http://xmlrpc1.mollom.com');
 
