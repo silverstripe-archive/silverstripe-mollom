@@ -30,7 +30,7 @@ with the public key and private key you obtained from Mollom (http://mollom.com/
 
 Mollom::setPublicKey("enter-your-mollom-public-key");
 Mollom::setPrivateKey("enter-your-mollom-private-key");
-SpamProtecterManager::set_spam_protecter('MollomSpamProtector');
+SpamProtectorManager::set_spam_protector('MollomSpamProtector');
 
 <<<< CODE ENDS >>>>
 
@@ -67,12 +67,12 @@ function ContactForm() {
   	$form = new Form($this, "TestForm", $fields, $actions);
 	
 	// Update the form to add the protecter field to it
-	$protecter = SpamProtecterManager::update_form($form);
+	$protector = SpamProtectorManager::update_form($form);
 	
 	// Tell the module to use Title, Message, Name, Website, Email fields
 	// as post title, post body, author name, author url, and author email, respectively,
 	// to do spam checking against Mollom service
-	if($protecter) $protecter->setFieldMapping('Title', 'Content', 'Name', 'Website', 'Email');
+	if($protector) $protector->setFieldMapping('Title', 'Content', 'Name', 'Website', 'Email');
 }
 
 <<<< CODE ENDS >>>>

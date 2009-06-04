@@ -2,7 +2,7 @@
 /**
  * @require 	PHP Mollom (http://mollom.crsolutions.be/)
  */
-class MollomField extends SpamProtecterField {
+class MollomField extends SpamProtectorField {
 	
 	/* Map fields (by name) to Spam service's post fields for spam checking */
 	protected $fieldToPostTitle = "";
