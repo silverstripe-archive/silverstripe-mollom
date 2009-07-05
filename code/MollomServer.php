@@ -84,7 +84,7 @@ class MollomServer extends DataObject {
 	 */
 	protected static function doCall($name, $params=null) {
 		try {
-			return call_user_func_array( 'Mollom::' . $name, $params);
+			return call_user_func_array(array('Mollom',$name), $params);
 		}
 		catch (Exception $e) {
 			$errCode = $e->getCode();
