@@ -1,0 +1,31 @@
+###############################################
+Mollom Module
+###############################################
+
+Maintainer Contact
+-----------------------------------------------
+Saophalkun Ponlu
+<phalkunz (at) silverstripe (dot) com>
+
+Requirements
+-----------------------------------------------
+- PHP 5 Mollom library < http://mollom.crsolutions.be/ > (already included)
+- Silverstripe SpamProtection module
+
+Documentation
+-----------------------------------------------
+
+Installation Instructions
+-----------------------------------------------
+See INSTALL
+
+Usage Overview
+-----------------------------------------------
+
+Known issues
+-----------------------------------------------
+Audio Captcha is not being correctly fetched
+
+Future works
+-----------------------------------------------
+Make use of quality rank returned from Mollom
