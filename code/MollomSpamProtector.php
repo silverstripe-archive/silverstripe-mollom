@@ -2,6 +2,8 @@
 
 /**
  * SpamProtector that implements Mollom spam protection
+ * 
+ * @package mollom
  */
 class MollomSpamProtector implements SpamProtector {
 	

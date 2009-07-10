@@ -1,6 +1,8 @@
 <?php
 /**
  * @require 	PHP Mollom (http://mollom.crsolutions.be/)
+ * 
+ * @package mollom
  */
 class MollomField extends SpamProtectorField {
 	

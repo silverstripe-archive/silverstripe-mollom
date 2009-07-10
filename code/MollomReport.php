@@ -2,6 +2,8 @@
 
 /** 
  * Report Interface for Mollom Status
+ *
+ * @package mollom
  */
 class MollomReport extends SSReport {
 	
