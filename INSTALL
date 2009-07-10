@@ -1,11 +1,11 @@
-SilverStripe Mollom Module 0.1 beta
+SilverStripe Mollom Module 0.2
 =======================================
 
 
 INSTALLATION
 ------------
 
-1. Unzip this file (mollom-0.1.tar.gz) inside your SilverStripe installation directory.
+1. Unzip this file (mollom-0.2.tar.gz) inside your SilverStripe installation directory.
 It should be at the same level as 'jsparty', 'cms' and 'sapphire' modules.
 
 2. Ensure the directory name for the module is 'mollom'. 
@@ -26,13 +26,10 @@ Copy this code into your mysite/_config.php file, and eplace the strings
 "enter-your-mollom-public-key" and "enter-your-mollom-private-key" 
 with the public key and private key you obtained from Mollom (http://mollom.com/)
 
-<<<< CODE STARTS >>>>
-
 Mollom::setPublicKey("enter-your-mollom-public-key");
 Mollom::setPrivateKey("enter-your-mollom-private-key");
 SpamProtectorManager::set_spam_protector('MollomSpamProtector');
 
-<<<< CODE ENDS >>>>
 
 What does this do?
 ------------------
