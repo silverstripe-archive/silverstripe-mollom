@@ -444,9 +444,14 @@ class Mollom
 				// code 1200 (Server too busy)
 				case 1200:
 					if(self::$serverList === null) self::getServerList();
-
+					var_dump(self::$serverList);
 					// do call again
-					return self::doCall($method, $parameters, self::$serverList[$counter], $counter++);
+					if (!isset(self::$serverList[$counter]) || $counter > 20) {
+						throw new Exception("Mollom error $code, out of servers to try");
+					} else {
+						return self::doCall($method, $parameters, self::$serverList[$counter], $counter++);
+						
+					}
 				break;
 
 				default:
