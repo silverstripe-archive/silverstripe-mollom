@@ -449,7 +449,8 @@ class Mollom
 					if (!isset(self::$serverList[$counter]) || $counter > 20) {
 						throw new Exception("Mollom error $code, out of servers to try");
 					} else {
-						return self::doCall($method, $parameters, self::$serverList[$counter], $counter++);
+						$counter++;
+						return self::doCall($method, $parameters, self::$serverList[$counter-1], $counter);
 						
 					}
 				break;
@@ -817,5 +818,4 @@ class Mollom
 	}
 
 }
-
 ?>
