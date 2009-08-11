@@ -1,10 +1,11 @@
 <?php
 /** 
- * This class is responsible for caching a list of Mollom servers
- * 
- * @note: Call to Mollom class's method should go through Mollom::doCall
+ * This class is responsible for caching a list of Mollom servers.
+ * Call to Mollom class's method should go through Mollom::doCall
+ *
  * @package mollom
  */
+
 class MollomServer extends DataObject {
 	static $db = array(
 		'ServerURL' => 'Varchar(255)'

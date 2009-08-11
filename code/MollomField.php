@@ -1,9 +1,10 @@
 <?php
 /**
- * @require 	PHP Mollom (http://mollom.crsolutions.be/)
- * 
+ * Mollom Form Field to include in your forms. 
+ *
  * @package mollom
  */
+
 class MollomField extends SpamProtectorField {
 	
 	/* Map fields (by name) to Spam service's post fields for spam checking */
@@ -20,8 +21,7 @@ class MollomField extends SpamProtectorField {
 	
 	protected $fieldToAuthorOpenId = "";
 	
-	function setFieldMapping($fieldToPostTitle, $fieldsToPostBody, $fieldToAuthorName=null, $fieldToAuthorUrl=null, $fieldToAuthorEmail=null, $fieldToAuthorOpenId=null)
-	{
+	function setFieldMapping($fieldToPostTitle, $fieldsToPostBody, $fieldToAuthorName=null, $fieldToAuthorUrl=null, $fieldToAuthorEmail=null, $fieldToAuthorOpenId=null) {
 		$this->fieldToPostTitle = $fieldToPostTitle;
 		$this->fieldsToPostBody = $fieldsToPostBody;
 		$this->fieldToAuthorName = $fieldToAuthorName;
@@ -85,7 +85,6 @@ class MollomField extends SpamProtectorField {
 	 *       				  so that Field() knows it's time to display captcha 			
 	 */
 	function validate($validator) {
-		
 		// If the user is ADMIN let them post comments without checking
 		if(Permission::check('ADMIN')) {
 			$this->clearMollomSession();
@@ -114,6 +113,7 @@ class MollomField extends SpamProtectorField {
 				return false;
 			}
 		}
+
 		$postTitle = null;
 		$postBody = null;
 		$authorName = null;
@@ -150,7 +150,7 @@ class MollomField extends SpamProtectorField {
 		// save the session ids in the session as we use them in the form returned
 		Session::set("mollom_session_id", $response['session_id']);
 		Session::set("mollom_user_session_id", $response['session_id']);
-		
+
 		// response was fine, let it pass through 
 		if ($response['spam'] == 'ham') {
 			$this->clearMollomSession();
@@ -187,7 +187,8 @@ class MollomField extends SpamProtectorField {
 			);
 
 			return false;
-		}	
+		}
+		return true;
 	}
 	
 	/**

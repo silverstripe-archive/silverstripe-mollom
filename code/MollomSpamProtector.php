@@ -1,10 +1,10 @@
 <?php
-
 /**
- * SpamProtector that implements Mollom spam protection
+ * Mollom Spam Protector that implements spam protection
  * 
  * @package mollom
  */
+
 class MollomSpamProtector implements SpamProtector {
 	
 	protected $mollomField;

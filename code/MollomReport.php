@@ -1,10 +1,10 @@
 <?php
-
 /** 
- * Report Interface for Mollom Status
+ * Backend Report Interface for Mollom Status
  *
  * @package mollom
  */
+
 class MollomReport extends SSReport {
 	
 	protected $title = "Mollom";
