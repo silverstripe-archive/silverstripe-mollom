@@ -26,8 +26,9 @@ class MollomSpamProtector implements SpamProtector {
 	function updateForm($form, $before=null, $fieldsToSpamServiceMapping=null) {
 		// check mollom keys before adding field to form
 		MollomServer::initServerList();
-		if (!MollomServer::verifyKey()) return false;
 		
+		if (!MollomServer::verifyKey()) return false;
+	
 		$this->mollomField = new MollomField("MollomField", "Captcha", null, $form);
 
 		if ($before && $form->Fields()->fieldByName($before)) {

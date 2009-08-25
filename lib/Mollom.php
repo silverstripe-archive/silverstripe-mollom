@@ -394,14 +394,11 @@ class Mollom
 			// increment counter
 			$counter++;
 
-			// no servers left
-			if($errorNumber == 28 && !isset(self::$serverList[$counter]) && $countServerList != 0) throw new Exception('No more servers available, try to increase the timeout.');
+			// try next server if there is one
+ 			if(isset(self::$serverList[$counter])) return self::doCall($method, $parameters, self::$serverList[$counter], $counter);
 
-			// timeout
-			elseif($errorNumber == 28 && isset(self::$serverList[$counter])) return self::doCall($method, $parameters, self::$serverList[$counter], $counter);
-
-			// other error
-			else throw new Exception('Something went wrong. Maybe the following message can be handy.<br />'. $errorString, $errorNumber);
+			// no servers left - throw error
+			throw new Exception("Error and no more servers available: \n$errorString", $errorNumber);
 		}
 
 		// process response
