@@ -3,7 +3,8 @@
  * This class is responsible for caching a list of Mollom servers.
  * Call to Mollom class's method should go through Mollom::doCall
  *
- * @package mollom
+ * @package spamprotection
+ * @subpackage mollom
  */
 
 class MollomServer extends DataObject {
@@ -59,23 +60,23 @@ class MollomServer extends DataObject {
 	 * @param 	array of server urls
 	 */
 	static function initServerList() {
-		self::doCall("setServerList", array(self::getServerList())); 
+		return self::doCall("setServerList", array(self::getServerList())); 
 	}
 	
-	static function getImageCaptcha($sessionId=null) {
-		return self::doCall("getImageCaptcha", array($sessionId));
+	static function getImageCaptcha($data) {
+		return self::doCall("getImageCaptcha", $data);
 	}
 	
-	static function getAudioCaptcha($sessionId=null) {
-		return self::doCall("getAudioCaptcha", array($sessionId));
+	static function getAudioCaptcha($data = array()) {
+		return self::doCall("getAudioCaptcha", $data);
 	}
 	
-	static function checkCaptcha($sessionId, $solution) {
-		return self::doCall("checkCaptcha", array($sessionId, $solution));
+	static function checkCaptcha($data = array()) {
+		return self::doCall("checkCaptcha", $data);
 	}
 	
-	static function checkContent($session_id=null, $postTitle=null, $postBody=null, $authorName=null, $authorUrl=null, $authorEmail=null, $authorOpenId=null) {
-		return self::doCall("checkContent", array($session_id, $postTitle, $postBody, $authorName, $authorUrl, $authorEmail, $authorOpenId));
+	static function checkContent($data = array()) {
+		return self::doCall("checkContent", $data);
 	}
 	
 	/**
@@ -102,10 +103,7 @@ class MollomServer extends DataObject {
 					
 				default:
 					throw new Exception( $e->getMessage() , $errCode);
-			}
-			
+			}			
 		}
-	}
-	
+	}	
 }
-?>

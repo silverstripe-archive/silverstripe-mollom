@@ -1,42 +1,19 @@
 <?php
+
 /**
- * Mollom Form Field to include in your forms. 
+ * Mollom Form Field.
  *
- * @package mollom
+ * The actual form field which is inserted into your form fields via the 
+ * spam protector class.
+ *
+ * @package spamprotection
+ * @subpackage mollom
  */
 
 class MollomField extends SpamProtectorField {
-	
+
 	static $alwaysShowCaptcha = false;
-	
-	// Map fields (by name) to Spam service's post fields for spam checking
-	protected $fieldToPostTitle = "";
-	
-	// it can be more than one fields mapped to post content
-	protected $fieldsToPostBody = array();
-	
-	protected $fieldToAuthorName = "";
-	
-	protected $fieldToAuthorUrl = "";
-	
-	protected $fieldToAuthorEmail = "";
-	
-	protected $fieldToAuthorOpenId = "";
-	
-	function setFieldMapping($fieldToPostTitle, $fieldsToPostBody, $fieldToAuthorName=null, $fieldToAuthorUrl=null, $fieldToAuthorEmail=null, $fieldToAuthorOpenId=null) {
-		$this->fieldToPostTitle = $fieldToPostTitle;
-		$this->fieldsToPostBody = $fieldsToPostBody;
-		$this->fieldToAuthorName = $fieldToAuthorName;
-		$this->fieldToAuthorUrl = $fieldToAuthorUrl;
-		$this->fieldToAuthorEmail = $fieldToAuthorEmail;
-		$this->fieldToAuthorOpenId = $fieldToAuthorOpenId;
-	}
-	
-	function __construct($name, $title = null, $value = null, $form = null, $rightTitle = null) {
-		parent::__construct($name, $title, $value, $form, $rightTitle);
-		MollomServer::initServerList();
-	}
-	
+
 	function Field() {
 		$attributes = array(
 			'type' => 'text',
@@ -52,8 +29,9 @@ class MollomField extends SpamProtectorField {
 		
 		$html = $this->createTag('input', $attributes);
 
-		if($this->showCaptcha()) {
-			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
+		if($this->showCaptcha() && MollomServer::verifyKey()) {
+		
+			$mollom_session_id = Session::get("mollom_session_id");
 			$imageCaptcha = MollomServer::getImageCaptcha($mollom_session_id);
 			$audioCaptcha = MollomServer::getAudioCaptcha($imageCaptcha['session_id']);
 			
@@ -66,8 +44,6 @@ class MollomField extends SpamProtectorField {
 			
 			return $html . $captchaHtml;
 		}
-		
-		return null;
 	}
 	
 	/**
@@ -77,16 +53,18 @@ class MollomField extends SpamProtectorField {
 	 * @return bool 
 	 */
 	private function showCaptcha() {
-		if((Session::get('mollom_captcha_requested') || empty($this->fieldsToPostBody)) && !Member::currentUser()) {
+		if((Session::get('mollom_captcha_requested') || !$this->getFieldMapping()) && !Member::currentUser()) {
 			return true;
 		}
 		return (self::$alwaysShowCaptcha == false) ? false : true;
 	}
 	
+	/**
+	 * Return the Field Holder if Required
+	 */
 	function FieldHolder() {
 		return ($this->showCaptcha()) ? parent::FieldHolder() : null;
 	}
-
 	
 	/**
 	 * This function first gets values from mapped fields and then check these values against
@@ -98,16 +76,23 @@ class MollomField extends SpamProtectorField {
 	 *       				  so that Field() knows it's time to display captcha 			
 	 */
 	function validate($validator) {
+		
 		// If the user is ADMIN let them post comments without checking
 		if(Permission::check('ADMIN')) {
 			$this->clearMollomSession();
 			return true;
 		}
 		
+		// Info from the session
+		$session_id = Session::get("mollom_session_id");
+		$captcha_requested = Session::get("mollom_captcha_requested");
+		$user_session_id = Session::get("mollom_user_session_id");
+		
+		// get fields to check
+		$spamFields = $this->getFieldMapping();
 		// Check captcha solution if user has submitted a solution
-		if((Session::get('mollom_captcha_requested') && trim($this->Value()) != '') || empty($this->fieldsToPostBody) ) {
-			$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
-			if ($mollom_session_id && MollomServer::checkCaptcha($mollom_session_id, $this->Value())) {
+		if($captcha_requested || !$spamFields) {
+			if(MollomServer::checkCaptcha(array($session_id,$this->Value()))) {
 				$this->clearMollomSession();
 				return true;
 			}
@@ -119,57 +104,36 @@ class MollomField extends SpamProtectorField {
 						"You didn't type in the correct captcha text. Please type it in again.",
 						PR_MEDIUM,
 						"Mollom Captcha provides words in an image, and expects a user to type them in a textfield"
-				), 
+					), 
 					"validation", 
 					false
 				);
+				Session::set('mollom_captcha_requested', true);
 				return false;
 			}
 		}
 
-		$postTitle = null;
-		$postBody = null;
-		$authorName = null;
-		$authorUrl = null;
-		$authorEmail = null;
-		$authorOpenId = null;
+
+		$fieldsToPass = array();
 		
-		/* Get form content */
-		if (isset($_REQUEST[$this->fieldToPostTitle])) $postTitle = $_REQUEST[$this->fieldToPostTitle];
-		
-		if (!is_array($this->fieldsToPostBody)) {
-			$postBody = $_REQUEST[$this->fieldsToPostBody];
-		}
-		else {
-			$fieldsToCheck = array_intersect( $this->fieldsToPostBody, array_keys($_REQUEST) );	
-			foreach ($fieldsToCheck as $fieldName) {
-				$postBody .= $_REQUEST[$fieldName] . " ";
+		if($spamFields) {
+			foreach($spamFields as $field) {
+				$fieldsToPass[$field] = (isset($_REQUEST[$field])) ? $_REQUEST[$field] : "";
 			}
 		}
+		array_unshift($fieldsToPass, $session_id);
+		$response = MollomServer::checkContent($fieldsToPass);
 		
-		if (isset($_REQUEST[$this->fieldToAuthorName])) $authorName = $_REQUEST[$this->fieldToAuthorName];
-		
-		if (isset($_REQUEST[$this->fieldToAuthorUrl])) $authorUrl = $_REQUEST[$this->fieldToAuthorUrl];
-		
-		if (isset($_REQUEST[$this->fieldToAuthorEmail])) $authorEmail = $_REQUEST[$this->fieldToAuthorEmail];
-		
-		if (isset($_REQUEST[$this->fieldToAuthorOpenId])) $authorOpenId = $_REQUEST[$this->fieldToAuthorOpenId];
-		
-		$mollom_session_id = Session::get("mollom_session_id") ? Session::get("mollom_session_id") : null;
-		
-		// check the submitted content against Mollom web service
-		$response = MollomServer::checkContent($mollom_session_id, $postTitle, $postBody, $authorName, $authorUrl, $authorEmail, $authorOpenId);
-
-		// save the session ids in the session as we use them in the form returned
 		Session::set("mollom_session_id", $response['session_id']);
-		Session::set("mollom_user_session_id", $response['session_id']);
+	 	Session::set("mollom_user_session_id", $response['session_id']);
+	
 		// response was fine, let it pass through 
 		if ($response['spam'] == 'ham') {
 			$this->clearMollomSession();
 			return true;
 		} 
-		// response is SPAM. Stop and throw an error
-		else if ($response['spam'] == 'unsure') {
+		// response is could be spam, or we just want to be sure.
+		else if($response['spam'] == 'unsure') {
 			$validator->validationError(
 				$this->name, 
 				_t(
@@ -211,4 +175,3 @@ class MollomField extends SpamProtectorField {
 		Session::clear('mollom_captcha_requested');
 	}
 }
-?>

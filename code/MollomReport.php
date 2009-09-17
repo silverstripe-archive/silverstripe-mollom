@@ -2,7 +2,8 @@
 /** 
  * Backend Report Interface for Mollom Status
  *
- * @package mollom
+ * @package spamprotection
+ * @subpackage mollom
  */
 
 class MollomReport extends SSReport {
@@ -47,4 +48,3 @@ class MollomReport extends SSReport {
 		return $fields;
 	}
 }
-?>
