@@ -77,11 +77,13 @@ class MollomField extends SpamProtectorField {
 	 */
 	function validate($validator) {
 		
+		if(!MollomServer::verifyKey()) return true;
+		
 		// If the user is ADMIN let them post comments without checking
 		if(Permission::check('ADMIN')) {
 			$this->clearMollomSession();
 			return true;
-		}
+		}	
 		
 		// Info from the session
 		$session_id = Session::get("mollom_session_id");
