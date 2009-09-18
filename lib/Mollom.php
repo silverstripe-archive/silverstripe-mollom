@@ -621,6 +621,10 @@ class Mollom
 	public static function getPublicKey() {
 		return self::$publicKey;
 	}
+	
+	public static function getPrivateKey() {
+		return self::$privateKey;
+	}
 	/**
 	 * Retrieve statistics from Mollom
 	 *
