@@ -56,7 +56,7 @@ class MollomField extends SpamProtectorField {
 		if((Session::get('mollom_captcha_requested') || !$this->getFieldMapping()) && !Member::currentUser()) {
 			return true;
 		}
-		return (self::$alwaysShowCaptcha == false) ? false : true;
+		return self::$alwaysShowCaptcha;
 	}
 	
 	/**
