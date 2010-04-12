@@ -73,16 +73,11 @@ class MollomField extends SpamProtectorField {
 			return false; 
 		}
 		
-		if ((Session::get('mollom_captcha_requested') || !$this->getFieldMapping()) && (!Member::currentUser() || self::$force_check_on_members)
-		) {
+		if ((Session::get('mollom_captcha_requested') || !$this->getFieldMapping()) && (!Member::currentUser() || self::$force_check_on_members)) {
 			return true;
 		} 
 		
 		return (bool)self::$always_show_captcha;
-	}
-	
-	private function shouldDoCheck() {
-		
 	}
 	
 	/**
