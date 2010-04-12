@@ -12,7 +12,23 @@
 
 class MollomField extends SpamProtectorField {
 
-	static $alwaysShowCaptcha = false;
+	static $always_show_captcha = false;
+	
+	static $force_check_on_members = false;
+	
+	/**
+	 * Initiate mollom service fields
+	 */
+	protected $mollomFields =  array(
+		'session_id' => '',
+		'post_title' => '',
+		'post_body' => '',
+		'author_name' => '', 
+		'author_url' => '',
+		'author_mail' => '',
+		'author_openid' => '',
+		'author_id' => ''
+	);
 
 	function Field() {
 		$attributes = array(
@@ -29,11 +45,11 @@ class MollomField extends SpamProtectorField {
 		
 		$html = $this->createTag('input', $attributes);
 
-		if($this->showCaptcha() && MollomServer::verifyKey()) {
+		if($this->showCaptcha() ) {
 		
 			$mollom_session_id = Session::get("mollom_session_id");
 			$imageCaptcha = MollomServer::getImageCaptcha($mollom_session_id);
-			$audioCaptcha = MollomServer::getAudioCaptcha($imageCaptcha['session_id']);
+			$audioCaptcha = MollomServer::getAudioCaptcha($mollom_session_id);
 			
 			Session::set("mollom_session_id", $imageCaptcha['session_id']);
 				
@@ -53,10 +69,20 @@ class MollomField extends SpamProtectorField {
 	 * @return bool 
 	 */
 	private function showCaptcha() {
-		if((Session::get('mollom_captcha_requested') || !$this->getFieldMapping()) && !Member::currentUser()) {
-			return true;
+		if(Permission::check('ADMIN') || !MollomServer::verifyKey()) {
+			return false; 
 		}
-		return self::$alwaysShowCaptcha;
+		
+		if ((Session::get('mollom_captcha_requested') || !$this->getFieldMapping()) && (!Member::currentUser() || self::$force_check_on_members)
+		) {
+			return true;
+		} 
+		
+		return (bool)self::$always_show_captcha;
+	}
+	
+	private function shouldDoCheck() {
+		
 	}
 	
 	/**
@@ -77,13 +103,16 @@ class MollomField extends SpamProtectorField {
 	 */
 	function validate($validator) {
 		
-		if(!MollomServer::verifyKey()) return true;
-		
 		// If the user is ADMIN let them post comments without checking
 		if(Permission::check('ADMIN')) {
 			$this->clearMollomSession();
 			return true;
 		}	
+		
+		// if the user has logged and there's no force check on member
+		if(Member::currentUser() && !self::$force_check_on_members) {
+			return true;
+		}
 		
 		// Info from the session
 		$session_id = Session::get("mollom_session_id");
@@ -94,7 +123,7 @@ class MollomField extends SpamProtectorField {
 		$spamFields = $this->getFieldMapping();
 		// Check captcha solution if user has submitted a solution
 		if($captcha_requested || !$spamFields) {
-			if(MollomServer::checkCaptcha(array($session_id,$this->Value()))) {
+			if(MollomServer::checkCaptcha($session_id, $this->Value())) {
 				$this->clearMollomSession();
 				return true;
 			}
@@ -115,16 +144,24 @@ class MollomField extends SpamProtectorField {
 			}
 		}
 
-
-		$fieldsToPass = array();
-		
-		if($spamFields) {
-			foreach($spamFields as $field) {
-				$fieldsToPass[$field] = (isset($_REQUEST[$field])) ? $_REQUEST[$field] : "";
+		// populate mollem fields
+		foreach($spamFields as $key => $field) {
+			if(array_key_exists($field, $this->mollomFields)) {
+				$this->mollomFields[$field] = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : "";
 			}
 		}
-		array_unshift($fieldsToPass, $session_id);
-		$response = MollomServer::checkContent($fieldsToPass);
+
+		$this->mollomFields['session_id'] = $session_id;
+		$response = MollomServer::checkContent(
+			$this->mollomFields['session_id'],
+			$this->mollomFields['post_title'],
+			$this->mollomFields['post_body'],
+			$this->mollomFields['author_name'],
+			$this->mollomFields['author_url'],
+			$this->mollomFields['author_mail'],
+			$this->mollomFields['author_openid'],
+			$this->mollomFields['author_id']
+		);
 		
 		Session::set("mollom_session_id", $response['session_id']);
 	 	Session::set("mollom_user_session_id", $response['session_id']);

@@ -64,19 +64,23 @@ class MollomServer extends DataObject {
 		return self::doCall("setServerList", array(self::getServerList())); 
 	}
 	
-	static function getImageCaptcha($data) {
+	static function getImageCaptcha($sessionId) {
+		$data = array($sessionId); 
 		return self::doCall("getImageCaptcha", $data);
 	}
 	
-	static function getAudioCaptcha($data = array()) {
+	static function getAudioCaptcha($sessionId) {
+		$data = array($sessionId); 
 		return self::doCall("getAudioCaptcha", $data);
 	}
 	
-	static function checkCaptcha($data = array()) {
+	static function checkCaptcha($sessionId, $solution) {
+		$data = array($sessionId, $solution);
 		return self::doCall("checkCaptcha", $data);
 	}
-	
-	static function checkContent($data = array()) {
+
+	static function checkContent($sessionId = null, $postTitle = null, $postBody = null, $authorName = null, $authorUrl = null, $authorEmail = null, $authorOpenId = null, $authorId = null) {
+		$data = func_get_args();
 		return self::doCall("checkContent", $data);
 	}
 	
@@ -88,8 +92,8 @@ class MollomServer extends DataObject {
 	 * @return 	mixed 
 	 */
 	protected static function doCall($name, $params=null) {
-		if(!$params) $params = array();
-		if(!is_array($params)) $params = array($params);
+		if(!$params || !is_array($params)) $params = array($params);
+		
 		try {
 			return call_user_func_array(array('Mollom',$name), $params);
 		}
