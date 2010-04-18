@@ -111,13 +111,12 @@ class MollomField extends SpamProtectorField {
 		
 		// Info from the session
 		$session_id = Session::get("mollom_session_id");
-		$captcha_requested = Session::get("mollom_captcha_requested");
-		$user_session_id = Session::get("mollom_user_session_id");
 		
 		// get fields to check
 		$spamFields = $this->getFieldMapping();
-		// Check captcha solution if user has submitted a solution
-		if($captcha_requested || !$spamFields) {
+		
+		// Check validate the captcha answer if the captcha was displayed
+		if($this->showCaptcha()) {
 			if(MollomServer::checkCaptcha($session_id, $this->Value())) {
 				$this->clearMollomSession();
 				return true;
