@@ -194,7 +194,7 @@ class MollomField extends SpamProtectorField {
 				), 
 				"error"
 			);
-			Session::set('mollom_captcha_requested', true);
+			$this->clearMollomSession();
 			return false;
 		}
 		return true;
