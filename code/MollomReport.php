@@ -19,12 +19,12 @@ class MollomReport extends SS_Report {
 	 * On top of that, we need to css to style the output profile in order to produce a readable output. 
 	 */
 	function getCMSFields() {
-		$URL = "http://mollom.com/statistics.swf?key=". Mollom::getPublicKey();
+		$URL = "http://mollom.com/statistics.swf?key=". MollomServer::getPublicKey();
 		$errMsg = "";
 		
 		MollomServer::initServerList();
 		
-		if(Mollom::getPublicKey()) {
+		if(MollomServer::getPublicKey()) {
 			if(!MollomServer::verifyKey()) {
 				$errMsg = _t('Mollom.KEYWRONG', 'Your key is not valid. Please try another key');
 			}

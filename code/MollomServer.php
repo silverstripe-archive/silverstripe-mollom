@@ -8,6 +8,12 @@
  */
 
 class MollomServer extends DataObject {
+	
+	/**
+	 * The name of the third-party library that communicate with Mollom with server
+	 */
+	static $library_class = "Mollom"; 
+	
 	static $db = array(
 		'ServerURL' => 'Varchar(255)'
 	);
@@ -56,7 +62,7 @@ class MollomServer extends DataObject {
 		$valid = false; 
 		
 		try { 
-			if(!Mollom::getPublicKey() || !Mollom::getPrivateKey()) return false;
+			if(!self::getPublicKey() || !self::getPrivateKey()) return false;
 			$valid =  self::doCall("verifyKey", null);
 		}
 		catch(Exception $e) {
@@ -71,6 +77,14 @@ class MollomServer extends DataObject {
 	 */
 	static function initServerList() {
 		return self::doCall("setServerList", array(self::getServerList())); 
+	}
+	
+	static function getPublicKey() {
+		return self::doCall("getPublicKey"); 
+	}
+	
+	static function getPrivateKey() {
+		return self::doCall("getPrivateKey"); 
 	}
 	
 	static function getImageCaptcha($sessionId) {
@@ -101,10 +115,12 @@ class MollomServer extends DataObject {
 	 * @return 	mixed 
 	 */
 	protected static function doCall($name, $params=null) {
+		$lib = self::$library_class;
+		
 		if(!$params || !is_array($params)) $params = array($params);
 		
 		try {
-			return call_user_func_array(array('Mollom',$name), $params);
+			return call_user_func_array(array($lib, $name), $params);
 		}
 		catch (Exception $e) {
 			$errCode = $e->getCode();
@@ -113,8 +129,10 @@ class MollomServer extends DataObject {
 				case 1100:
 					// delete cached server list first - in database
 					singleton('MollomServer')->clearCachedServerList();
+					
 					// use default server list 
-					Mollom::setServerList(Mollom::getServerList());
+					$lib::setServerList($lib::getServerList());
+					
 					break;
 					
 				default:
