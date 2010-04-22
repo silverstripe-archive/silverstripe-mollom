@@ -53,8 +53,17 @@ class MollomServer extends DataObject {
 	}
 	
 	static function verifyKey() {
-		if(!Mollom::getPublicKey() || !Mollom::getPrivateKey()) return false;
-		return self::doCall("verifyKey", null);
+		$valid = false; 
+		
+		try { 
+			if(!Mollom::getPublicKey() || !Mollom::getPrivateKey()) return false;
+			$valid =  self::doCall("verifyKey", null);
+		}
+		catch(Exception $e) {
+			$valid = false; 
+		}
+		
+		return $valid;
 	}
 	
 	/**
