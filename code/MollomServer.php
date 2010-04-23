@@ -14,12 +14,20 @@ class MollomServer extends DataObject {
 	 */
 	static $library_class = "Mollom"; 
 	
+	/**
+	 * The allowed maximum number of occurrences of a single call {@see self::doCall()}
+	 */
+	static $max_occurrences_num = 5;
+	
 	static $db = array(
 		'ServerURL' => 'Varchar(255)'
 	);
 	
 	static function getCachedServerList() {
-		$list = DataObject::get("MollomServer");
+		/**
+		 * The order of servers is important http://mollom.com/api/getServerList
+		 */
+		$list = DataObject::get("MollomServer", '', 'ID ASC');
 		
 		if ($list) {
 			$serverArray = array();
@@ -112,9 +120,10 @@ class MollomServer extends DataObject {
 	 * in order to try-and-catch and handle exceptions on one place 
 	 * @param 	string 		name of the function 
 	 * @param 	array 		array of the function's parameter 
+	 * @param	int 		the number of occurrences of a method call
 	 * @return 	mixed 
 	 */
-	protected static function doCall($name, $params=null) {
+	protected static function doCall($name, $params=null, $occurrences = 0) {
 		$lib = self::$library_class;
 		
 		if(!$params || !is_array($params)) $params = array($params);
@@ -132,6 +141,11 @@ class MollomServer extends DataObject {
 					
 					// use default server list 
 					$lib::setServerList($lib::getServerList());
+					
+					if(self::$max_occurrences_num > $occurrences) {
+						// call the function with the default server list set above
+						return self::doCall($name, $params, ++$occurrences);
+					}
 					
 					break;
 					
