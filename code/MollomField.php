@@ -182,7 +182,7 @@ class MollomField extends SpamProtectorField {
 			return false;
 		}
 		// Mollom has detected spam!
-		else {
+		else if($response['spam'] == 'spam') {
 			$this->clearMollomSession();
 			$validator->validationError(
 				$this->name, 
@@ -197,6 +197,7 @@ class MollomField extends SpamProtectorField {
 			$this->clearMollomSession();
 			return false;
 		}
+		
 		return true;
 	}
 	
