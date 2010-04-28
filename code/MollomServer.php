@@ -140,7 +140,8 @@ class MollomServer extends DataObject {
 					singleton('MollomServer')->clearCachedServerList();
 					
 					// use default server list 
-					$lib::setServerList($lib::getServerList());
+					$defaultServerList = call_user_func(array($lib, 'getServerList'));
+					call_user_func_array(array($lib, 'setServerList'), array($defaultServerList));
 					
 					if(self::$max_occurrences_num > $occurrences) {
 						// call the function with the default server list set above
