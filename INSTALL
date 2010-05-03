@@ -26,8 +26,8 @@ Copy this code into your mysite/_config.php file, and eplace the strings
 "enter-your-mollom-public-key" and "enter-your-mollom-private-key" 
 with the public key and private key you obtained from Mollom (http://mollom.com/)
 
-Mollom::setPublicKey("enter-your-mollom-public-key");
-Mollom::setPrivateKey("enter-your-mollom-private-key");
+MollomServer::setPublicKey("enter-your-mollom-public-key");
+MollomServer::setPrivateKey("enter-your-mollom-private-key");
 SpamProtectorManager::set_spam_protector('MollomSpamProtector');
 
 

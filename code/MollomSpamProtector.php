@@ -36,7 +36,7 @@ class MollomSpamProtector implements SpamProtector {
 			if($object->hasField('SessionID')) {
 				if(in_array($feedback, array('spam', 'profanity', 'low-quality', 'unwanted'))) {
 					MollomServer::initServerList();
-					return Mollom::sendFeedback($object->SessionID, $feedback);
+					return MollomServer::sendFeedback($object->SessionID, $feedback);
 				}
 			}
 		}

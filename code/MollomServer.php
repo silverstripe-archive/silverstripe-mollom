@@ -95,6 +95,16 @@ class MollomServer extends DataObject {
 		return self::doCall("getPrivateKey"); 
 	}
 	
+	static function setPublicKey($key) {
+		$data = array($key); 
+		self::doCall("setPublicKey", $data); 
+	}
+	
+	static function setPrivateKey($key) {
+		$data = array($key);
+		self::doCall("setPrivateKey", $data); 
+	}
+	
 	static function getImageCaptcha($sessionId) {
 		$data = array($sessionId); 
 		return self::doCall("getImageCaptcha", $data);
@@ -113,6 +123,11 @@ class MollomServer extends DataObject {
 	static function checkContent($sessionId = null, $postTitle = null, $postBody = null, $authorName = null, $authorUrl = null, $authorEmail = null, $authorOpenId = null, $authorId = null) {
 		$data = func_get_args();
 		return self::doCall("checkContent", $data);
+	}
+	
+	static function sendFeedback($sessionID, $feedback) {
+		$data = array($sessionID, $feedback); 
+		return self::doCall("sendFeedback", $data);
 	}
 	
 	/**
