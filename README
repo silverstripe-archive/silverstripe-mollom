@@ -12,6 +12,7 @@ Will Rossiter
 
 Requirements
 -----------------------------------------------
+- Silverstripe 2.4
 - PHP 5 Mollom library < http://mollom.crsolutions.be/ > (already included)
 - Silverstripe SpamProtection module
 
