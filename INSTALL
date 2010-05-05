@@ -63,13 +63,9 @@ function ContactForm() {
 
   	$form = new Form($this, "TestForm", $fields, $actions);
 	
-	// Update the form to add the protecter field to it
+	// Update the form to add the protecter field to it and specify field mapping
 	$protector = SpamProtectorManager::update_form($form, null, array('Name' => 'author_name', 'Email' => 'author_email', 'Website' => 'author_url', 'Content' => 'post_body'));
 	
-	// Tell the module to use Title, Message, Name, Website, Email fields
-	// as post title, post body, author name, author url, and author email, respectively,
-	// to do spam checking against Mollom service
-	if($protector) $protector->setFieldMapping('Title', 'Content', 'Name', 'Website', 'Email');
 }
 
 <<<< CODE ENDS >>>>
