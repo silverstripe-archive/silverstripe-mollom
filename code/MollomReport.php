@@ -6,7 +6,7 @@
  * @subpackage mollom
  */
 
-class MollomReport extends SS_Report {
+class MollomReport extends SSReport {
 	
 	protected $title = "Mollom";
 	
