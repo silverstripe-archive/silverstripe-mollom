@@ -23,10 +23,12 @@ class MollomServer extends DataObject {
 		'ServerURL' => 'Varchar(255)'
 	);
 	
+	/**
+	 * Make the list is retrieved ordered by the IDs because the order of servers is important
+	 * We have experienced that the table can sometimes have wrong order of IDs
+	 * @link http://mollom.com/api/getServerList
+	 */
 	static function getCachedServerList() {
-		/**
-		 * The order of servers is important http://mollom.com/api/getServerList
-		 */
 		$list = DataObject::get("MollomServer", '', 'ID ASC');
 		
 		if ($list) {
