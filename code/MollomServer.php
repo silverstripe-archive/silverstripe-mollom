@@ -27,7 +27,7 @@ class MollomServer extends DataObject {
 		/**
 		 * The order of servers is important http://mollom.com/api/getServerList
 		 */
-		$list = DataObject::get("MollomServer", '', 'ID ASC');
+		$list = DataObject::get("MollomServer", '', '"ID" ASC');
 		
 		if ($list) {
 			$serverArray = array();
