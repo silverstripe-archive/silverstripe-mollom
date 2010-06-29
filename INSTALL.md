@@ -1,6 +1,7 @@
 # SilverStripe Mollom Module
 
 ## Installation
+
 1. Unzip this file (mollom-0.3.tar.gz) inside your SilverStripe installation directory.
 It should be at the same level as 'cms' and 'sapphire' modules.
 
@@ -16,6 +17,7 @@ Read the instructions below to setup the initial configuration of the module.
 
 
 ## Setting up the Mollom API key
+
 Copy the following code into your mysite/_config.php file, and eplace the strings
 "enter-your-mollom-public-key" and "enter-your-mollom-private-key" 
 with the public key and private key you obtained from Mollom (http://mollom.com/)
@@ -25,11 +27,13 @@ with the public key and private key you obtained from Mollom (http://mollom.com/
 	SpamProtectorManager::set_spam_protector('MollomSpamProtector');
 
 ### What does this do?
+
 This tell 'SpamProtection' module that you want to use 'MollomField' as a spam
 protection module across your site, and set up the public and private keys that
 are required for the module to interact with Mollom service. 
 
 ## Setting up a form with a mollom field 
+
 Suppose you create a contact form in a page type called 'ContactPage.php' (in 'mysite/code')
 
 	/**
@@ -59,6 +63,7 @@ Suppose you create a contact form in a page type called 'ContactPage.php' (in 'm
 	}
 
 ### What does this do?
+
 This setup a contact form with a mollom field. When page first loaded, it displays
 a normal form without the protector field. 
 
