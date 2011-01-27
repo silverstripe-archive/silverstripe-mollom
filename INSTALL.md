@@ -61,6 +61,10 @@ Suppose you create a contact form in a page type called 'ContactPage.php' (in 'm
 	
 		return $form;
 	}
+	
+### Testing
+In order to test this module, make sure you are not logged in as an admin when displaying the page the form is set on.
+Also you may want to switch Mollom into developers mode (Log into Mollom's website, edit the properties of the website you configured, and check the "Developer mode"). This mode alters Mollom's behaviour, letting you use keywords like 'spam', 'ham', and 'unsure' in order to display the captcha field or get redirected, simulating spamming.
 
 ### What does this do?
 
