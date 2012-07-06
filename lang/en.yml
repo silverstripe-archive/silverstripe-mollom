@@ -1,0 +1,14 @@
+en:
+  Mollom:
+    KEYEXISTS: Your key exists and is working.
+    KEYSTATUS: Mollom Key Status
+    KEYWRONG: Your key is not valid. Please try another key.
+    NOKEY: You have not configured your key. Please add it to mysite/_config.php.
+    TERMS: View Mollom's Terms of Use
+  MollomCaptchaField:
+    CAPTCHAREQUESTED: Please answer the captcha question.
+    INCORRECTSOLUTION: You didn't type in the correct captcha text. Please type it in again.
+    SPAM: Your submission has been rejected because it was treated as spam.
+  MollomServer:
+    PLURALNAME: Mollom Servers
+    SINGULARNAME: Mollom Server

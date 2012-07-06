@@ -30,15 +30,15 @@ class MollomField extends SpamProtectorField {
 		'author_id' => ''
 	);
 
-	function Field() {
+	function Field($properties = array()) {
 		$attributes = array(
 			'type' => 'text',
 			'class' => 'text' . ($this->extraClass() ? $this->extraClass() : ''),
 			'id' => $this->id(),
-			'name' => $this->Name(),
+			'name' => $this->getName(),
 			'value' => $this->Value(),
 			'title' => $this->Title(),
-			'tabindex' => $this->getTabIndex(),
+			'tabindex' => $this->getAttribute('tabindex'),
 			'maxlength' => ($this->maxLength) ? $this->maxLength : null,
 			'size' => ($this->maxLength) ? min( $this->maxLength, 30 ) : null 
 		);
@@ -83,8 +83,8 @@ class MollomField extends SpamProtectorField {
 	/**
 	 * Return the Field Holder if Required
 	 */
-	function FieldHolder() {
-		return ($this->showCaptcha()) ? parent::FieldHolder() : null;
+	function FieldHolder($properties = array()) {
+		return ($this->showCaptcha()) ? parent::FieldHolder($properties) : null;
 	}
 	
 	/**
@@ -127,7 +127,6 @@ class MollomField extends SpamProtectorField {
 					_t(
 						'MollomCaptchaField.INCORRECTSOLUTION', 
 						"You didn't type in the correct captcha text. Please type it in again.",
-						PR_MEDIUM,
 						"Mollom Captcha provides words in an image, and expects a user to type them in a textfield"
 					), 
 					"validation", 
@@ -138,7 +137,7 @@ class MollomField extends SpamProtectorField {
 			}
 		}
 
-		// populate mollem fields
+		// populate mollom fields
 		foreach($spamFields as $key => $field) {
 			if(array_key_exists($field, $this->mollomFields)) {
 				$this->mollomFields[$field] = (isset($_REQUEST[$key])) ? $_REQUEST[$key] : "";
@@ -165,14 +164,13 @@ class MollomField extends SpamProtectorField {
 			$this->clearMollomSession();
 			return true;
 		} 
-		// response is could be spam, or we just want to be sure.
+		// response could be spam, or we just want to be sure.
 		else if($response['spam'] == 'unsure') {
 			$validator->validationError(
 				$this->name, 
 				_t(
 					'MollomCaptchaField.CAPTCHAREQUESTED', 
 					"Please answer the captcha question",
-					PR_MEDIUM,
 					"Mollom Captcha provides words in an image, and expects a user to type them in a textfield"
 				), 
 				"warning"
@@ -189,7 +187,6 @@ class MollomField extends SpamProtectorField {
 				_t(
 					'MollomCaptchaField.SPAM', 
 					"Your submission has been rejected because it was treated as spam.",
-					PR_MEDIUM,
 					"Mollom Captcha provides words in an image, and expects a user to type them in a textfield"
 				), 
 				"error"
