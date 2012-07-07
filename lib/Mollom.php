@@ -122,7 +122,7 @@ class Mollom
 	 * @return	string
 	 * @param	mixed $value
 	 */
-	private function buildValue($value)
+	private static function buildValue($value)
 	{
 		// get type
 		$type = gettype($value);
@@ -182,7 +182,7 @@ class Mollom
 		// do the call
 		$responseString = self::doCall('checkCaptcha', $parameters);
 		// validate
-		if(!isset($responseString->params->param->value->boolean)) throw new Exception('Invalid response in checkCapthca.');
+		if(!isset($responseString->params->param->value->boolean)) throw new Exception('Invalid response in checkCaptcha.');
 
 		// return
 		if((string) $responseString->params->param->value->boolean == '1') return true;
@@ -193,7 +193,7 @@ class Mollom
 
 
 	/**
-	 * Check if the data is spam or not, and gets an assessment of the datas quality
+	 * Check if the data is spam or not, and gets an assessment of the data's quality
 	 *
 	 * This function will be used most. The more data you submit the more accurate the claasification will be.
 	 * If the spamstatus is 'unsure', you could send the user an extra check (eg. a captcha).
@@ -203,7 +203,7 @@ class Mollom
 	 * The function will return an array with 3 elements:
 	 * - spam			the spam-status (unknown/ham/spam/unsure)
 	 * - quality		an assessment of the content's quality (between 0 and 1)
-	 * - session_id		Molloms session_id
+	 * - session_id		Mollom's session_id
 	 *
 	 * @return	array
 	 * @param	string[optional] $sessionId
@@ -234,7 +234,7 @@ class Mollom
 		if($authorOpenId != null) $parameters['author_openid'] = (string) $authorOpenId;
 		if($authorId != null) $parameters['author_id'] = (string) $authorId;
 
-		// set autor ip
+		// set author ip
 		$authorIp = self::getIpAddress();
 		if($authorIp != null) $parameters['author_ip'] = (string) $authorIp;
 

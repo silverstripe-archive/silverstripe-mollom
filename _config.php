@@ -1,2 +1,3 @@
 <?php
-SS_Report::register('ReportAdmin', 'MollomReport');
+
+LeftAndMain::require_css('mollom/css/MollomAdmin.css');
