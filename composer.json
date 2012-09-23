@@ -1,0 +1,22 @@
+{
+	"name": "silverstripe/mollom",
+	"description": "Mollom module for SilverStripe.",
+	"type": "silverstripe-module",
+	"keywords": ["silverstripe", "spamprotection", "mollom"],
+	"authors": [
+	{
+		"name": "Saophalkun Ponlu",
+		"email": "phalkunz@silverstripe.com"
+	},
+	{
+		"name": "Will Rossiter",
+		"email": "will@fullscreen.io"
+	}
+	],
+	"minimum-stability": "dev",
+	"require":
+	{
+		"silverstripe/framework": "3.*",
+		"silverstripe/spamprotection": "dev-master"
+	}
+}
