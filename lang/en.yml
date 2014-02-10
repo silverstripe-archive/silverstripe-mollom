@@ -9,6 +9,3 @@ en:
     CAPTCHAREQUESTED: Please answer the captcha question.
     INCORRECTSOLUTION: You didn't type in the correct captcha text. Please type it in again.
     SPAM: Your submission has been rejected because it was treated as spam.
-  MollomServer:
-    PLURALNAME: Mollom Servers
-    SINGULARNAME: Mollom Server

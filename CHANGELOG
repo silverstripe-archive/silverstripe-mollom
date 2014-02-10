@@ -1,6 +1,0 @@
-0.1:
-- initial release
-
-0.2
-- Renamed references to 'SpamProtecterManager' to 'SpamProtectorManager'. Note the typo with the 'er'
-- Fixed PHP 5.2.3 requirement in MollomServer
