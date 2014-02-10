@@ -12,6 +12,7 @@
 
 * SilverStripe >= 3.1  
 * Silverstripe SpamProtection module
+* Mollom REST PHP Client <https://github.com/Mollom/MollomPHP>
 
 ## Documentation
 
