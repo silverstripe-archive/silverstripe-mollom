@@ -1,6 +1,6 @@
 <?php
 
-require_once(MOLLOM_PATH . '/vendor/mollom/mollom/mollom.class.inc');
+require_once(BASE_PATH . '/vendor/mollom/client/mollom.class.inc');
 
 /**
  * A customized version of {@link Mollom} to run on SilverStripe. See the 
@@ -11,6 +11,11 @@ require_once(MOLLOM_PATH . '/vendor/mollom/mollom/mollom.class.inc');
  */
 
 class MollomSpamProtector extends Mollom implements SpamProtector {
+	
+	/**
+	 * @var array
+	 */
+	private $fieldMapping = array();
 
 	/**
 	 * @var array
@@ -168,11 +173,19 @@ class MollomSpamProtector extends Mollom implements SpamProtector {
 	/**
 	 * Return the Field that we will use in this protector.
 	 * 
+	 * @param string $name
+	 * @param string $title
+	 * @param mixed $value
 	 * @return MollomField
 	 */
 	public function getFormField($name = "MollomField", $title = "Captcha", $value = null) {		
 		$field = new MollomField($name, $title, $value);
-
+		$field->setFieldMapping($this->fieldMapping);
 		return $field;
 	}
+
+	public function setFieldMapping($fieldMapping) {
+		$this->fieldMapping = $fieldMapping;
+	}
+
 }

@@ -10,6 +10,11 @@
  */
 
 class MollomField extends FormField {
+	
+	/**
+	 * @var array
+	 */
+	private $fieldMapping = array();
 
 	/**
 	 * @config
@@ -61,25 +66,43 @@ class MollomField extends FormField {
 	}
 
 	/**
+	 * Determines if the current user is exempt from spam detection
+	 *
+	 * @return boolean True if the user is exempt from spam detection
+	 */
+	protected function exemptUser() {
+
+		// Never show captcha for admins
+		if (Permission::check('ADMIN')) {
+			return true;
+		}
+
+		// Allow logged in members to bypass captcha if allowed
+		if (Member::currentUser() && !Config::inst()->get('MollomField', 'force_check_on_members')) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Return if we should show the captcha to the user.
 	 * 
 	 * @return boolean
 	 */
 	public function getShowCaptcha() {
-		if(Permission::check('ADMIN')) {
-			return false; 
-		}
+		
+		// If this user is eligible to bypass spam detection, don't show them the recaptcha
+		if($this->exemptUser()) return false;
+		
+		// Show captcha if always requested
+		if (Config::inst()->get('MollomField', 'always_show_captcha')) return true;
 
-		$requested = Session::get('mollom_captcha_requested');
-		$noMapping = ($this->getForm() && !$this->getForm()->hasSpamProtectionMapping());
+		// If a captcha is requested then we need to redisplay it to the user
+		if (Session::get('mollom_captcha_requested')) return true;
 
-		if($requested || !$noMapping) {
-			if(!Member::currentUser() || !Config::inst()->get('MollomField', 'force_check_on_members')) {
-				return true;
-			}
-		}
-
-		return (bool) Config::inst()->get('MollomField', 'always_show_captcha');
+		// If there are no field mappings, then the captcha is mandatory
+		return empty($this->fieldMapping);
 	}
 	
 	/**
@@ -98,6 +121,22 @@ class MollomField extends FormField {
 
 		return $this->_mollom;
 	}
+	
+	/**
+	 * @return array
+	 */
+	public function getSpamMappedData() {
+		if(empty($this->fieldMapping)) return null;
+		
+		$result = array();
+		$data = $this->form->getData();
+
+		foreach($this->fieldMapping as $fieldName => $mappedName) {
+			$result[$mappedName] = (isset($data[$fieldName])) ? $data[$fieldName] : null;
+		}
+
+		return $result;
+	}
 
 	/**
 	 * Validate the captcha information
@@ -106,21 +145,16 @@ class MollomField extends FormField {
 	 *
 	 * @return boolean
 	 */
-	public function validate($validator) {	
-		if(Permission::check('ADMIN')) {
-			$this->clearMollomSession();
-
-			return true;
-		}	
+	public function validate($validator) {
 		
-		if(Member::currentUser() && !Config::inst()->get('MollomField', 'force_check_on_members')) {
+		// Bypass spam detection for eligible users
+		if($this->exemptUser()) {
 			$this->clearMollomSession();
-
 			return true;
 		}
 		
 		$session_id = Session::get("mollom_session_id");
-		$mapped = $this->getForm()->getSpamMappedData();
+		$mapped = $this->getSpamMappedData();
 		$data = array();
 
 		// prepare submission
@@ -237,5 +271,16 @@ class MollomField extends FormField {
 	private function clearMollomSession() {
 		Session::clear('mollom_session_id');
 		Session::clear('mollom_captcha_requested');
+	}
+
+	/**
+	 * Set the fields to map spam protection too
+	 *
+	 * @param array $fieldMapping array of Field Names, where the indexes of the array are
+	 * the field names of the form and the values are the standard spamprotection
+	 * fields used by the protector
+	 */
+	public function setFieldMapping($fieldMapping) {
+		$this->fieldMapping = $fieldMapping;
 	}
 }
