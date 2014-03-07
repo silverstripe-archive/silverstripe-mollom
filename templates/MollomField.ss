@@ -25,5 +25,5 @@
 	<% end_if %>
 <% else %>
 	<!-- Mollom Captcha is not required at this stage, but we still validate against the API -->
-	<input type="hidden" name="$Name" size="10" value="" autocomplete="off" />
+	<input type="hidden" name="$Name" value="" />
 <% end_if %>
