@@ -94,16 +94,17 @@ class MollomSpamProtector extends Mollom implements SpamProtector {
 		// if the user has turned on debug mode in the Config API, change the 
 		// server to the dev version
 		if(Config::inst()->get('Mollom', 'dev')) {
-			$server = 'dev.mollom.com';
+			$server = 'http://' . 'dev.mollom.com' . '/' . Mollom::API_VERSION;
+		}
+		else {	// Mollom authentication headers should not be sent to the dev endpoint
+			// CURLOPT_HTTPHEADER expects all headers as values:
+			// @see http://php.net/manual/function.curl-setopt.php
+			foreach ($headers as $name => &$value) {
+				$value = $name . ': ' . $value;
+			}
 		}
 
 		$ch = curl_init();
-
-		// CURLOPT_HTTPHEADER expects all headers as values:
-		// @see http://php.net/manual/function.curl-setopt.php
-		foreach ($headers as $name => &$value) {
-			$value = $name . ': ' . $value;
-		}
 
 		// Compose the Mollom endpoint URL.
 		$url = $server . '/' . $path;
