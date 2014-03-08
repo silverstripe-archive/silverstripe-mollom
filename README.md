@@ -54,7 +54,7 @@ the website. Those should also been included through the Config API
 ---
 name: spamprotection
 ---
-FormSpamProtection:
+FormSpamProtectionExtension:
   default_spam_protector: MollomSpamProtector
 Mollom:
   public_key: <key>
