@@ -106,6 +106,17 @@ class MollomField extends FormField {
 	}
 	
 	/**
+	 * Returns the field label if showing captcha - used by templates.
+	 * 
+	 * @return string Title if field is showing the captcha
+	 */
+	public function Title() {
+		if ($this->getShowCaptcha()) {
+			return parent::Title();
+		}
+	}
+	
+	/**
 	 * @return MollomSpamProtector
 	 */
 	public function getMollom() {
