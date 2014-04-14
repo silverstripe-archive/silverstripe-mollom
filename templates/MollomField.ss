@@ -3,7 +3,7 @@
 		<div class="mollom-captcha">
 			<div class="mollom-image-captcha">
 				<img src="$Captcha" alt="Type the characters you see in this picture." />
-      			<input type="text" name="$Name" size="10" value="" autocomplete="off" />
+      			<input type="text" name="$Name" size="10" value="" autocomplete="off" required />
 			</div>
 			<!--
 			<div class="mollom-audio-captcha">
