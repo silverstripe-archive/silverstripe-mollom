@@ -102,6 +102,7 @@ class MollomSpamProtector extends Mollom implements SpamProtector {
 			foreach ($headers as $name => &$value) {
 				$value = $name . ': ' . $value;
 			}
+			$headers["Expect"] = "Expect:";
 		}
 
 		$ch = curl_init();
