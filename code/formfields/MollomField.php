@@ -75,10 +75,8 @@ class MollomField extends FormField {
 	 * 
 	 * @return void
 	 */
-	public function setCaptchaType($Type)
-	{
-		if (in_array($Type, array('image', 'audio')))
-		{
+	public function setCaptchaType($Type) {
+		if (in_array($Type, array('image', 'audio'))) {
 			$this->captchaType = $Type;
 		}
 	}
@@ -88,8 +86,7 @@ class MollomField extends FormField {
 	 * 
 	 * @return string
 	 */
-	public function getCaptchaType()
-	{
+	public function getCaptchaType() {
 		return $this->captchaType;
 	}
 	
