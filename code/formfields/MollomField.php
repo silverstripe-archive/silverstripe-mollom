@@ -15,6 +15,11 @@ class MollomField extends FormField {
 	 * @var array
 	 */
 	private $fieldMapping = array();
+	
+	/**
+	 * @var string
+	 */
+	private $captchaType = 'image';
 
 	/**
 	 * @config
@@ -52,7 +57,7 @@ class MollomField extends FormField {
 			Requirements::css(MOLLOM_DIR . '/css/mollom.css');
 
 			$result = $this->getMollom()->createCaptcha(array(
-				'type' => 'image'
+				'type' => $this->getCaptchaType()
 			));
 
 			if(is_array($result)) {
@@ -64,6 +69,28 @@ class MollomField extends FormField {
 
 		return null;
 	}
+	
+	/**
+	 * Set the captcha type. Mollom supports "image" and "audio" types.
+	 * 
+	 * @return void
+	 */
+	public function setCaptchaType($Type) {
+		if (in_array($Type, array('image', 'audio'))) {
+			$this->captchaType = $Type;
+		}
+	}
+	
+	/**
+	 * Returns the captcha type that has been set. Default is "image".
+	 * 
+	 * @return string
+	 */
+	public function getCaptchaType() {
+		return $this->captchaType;
+	}
+	
+	
 
 	/**
 	 * Determines if the current user is exempt from spam detection
