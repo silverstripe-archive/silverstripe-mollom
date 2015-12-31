@@ -10,183 +10,187 @@ require_once(BASE_PATH . '/vendor/mollom/client/mollom.class.inc');
  * @package mollom
  */
 
-class MollomSpamProtector extends Mollom implements SpamProtector {
-	
-	/**
-	 * @var array
-	 */
-	private $fieldMapping = array();
+class MollomSpamProtector extends Mollom implements SpamProtector
+{
+    
+    /**
+     * @var array
+     */
+    private $fieldMapping = array();
 
-	/**
-	 * @var array
-	 */
-	public $configurationMap = array(
-		'publicKey' => 'public_key',
-		'privateKey' => 'private_key',
-	);
+    /**
+     * @var array
+     */
+    public $configurationMap = array(
+        'publicKey' => 'public_key',
+        'privateKey' => 'private_key',
+    );
 
-	/**
-	 * Load configuration for a given variable such as privateKey. Since 
-	 * SilverStripe uses YAML conventions, look for those variables 
-	 *
-	 * @param string $name
-	 * 
-	 * @return mixed
-	 */
-	public function loadConfiguration($name) {
-		return Config::inst()->get('Mollom', $this->configurationMap[$name]);
-	}
+    /**
+     * Load configuration for a given variable such as privateKey. Since 
+     * SilverStripe uses YAML conventions, look for those variables 
+     *
+     * @param string $name
+     * 
+     * @return mixed
+     */
+    public function loadConfiguration($name)
+    {
+        return Config::inst()->get('Mollom', $this->configurationMap[$name]);
+    }
 
-	/**
-	 * Save configuration value for a given variable
-	 *
-	 * @param string $name
-	 * @param mixed $value
-	 *
-	 * @return void
-	 */
-	public function saveConfiguration($name, $value) {
-		return Config::inst()->update('Mollom', $this->configurationMap[$name], $value);
-	}
-	
-	/**
-	 * Delete a configuration value.
-	 *
-	 * SilverStripe does not provide 'delete' as such, but let's just save null
-	 * as the value for the session.
-	 *
-	 * @param string $name
-	 */
-	public function deleteConfiguration($name) {
-		return $this->saveConfiguration($name, null);
-	}
-	
-	/**
-	 * Helper for Mollom to know this current client instance.
-	 *
-	 * @return array
-	 */
-	public function getClientInformation() {
-		$info = new SapphireInfo(); 
-		$useragent = 'SilverStripe/' . $info->Version();
+    /**
+     * Save configuration value for a given variable
+     *
+     * @param string $name
+     * @param mixed $value
+     *
+     * @return void
+     */
+    public function saveConfiguration($name, $value)
+    {
+        return Config::inst()->update('Mollom', $this->configurationMap[$name], $value);
+    }
+    
+    /**
+     * Delete a configuration value.
+     *
+     * SilverStripe does not provide 'delete' as such, but let's just save null
+     * as the value for the session.
+     *
+     * @param string $name
+     */
+    public function deleteConfiguration($name)
+    {
+        return $this->saveConfiguration($name, null);
+    }
+    
+    /**
+     * Helper for Mollom to know this current client instance.
+     *
+     * @return array
+     */
+    public function getClientInformation()
+    {
+        $info = new SapphireInfo();
+        $useragent = 'SilverStripe/' . $info->Version();
 
-		$data = array(
-			'platformName' => $useragent,
-			'platformVersion' => $info->Version(),
-			'clientName' => 'MollomPHP',
-			'clientVersion' => 'Unknown',
-		);
+        $data = array(
+            'platformName' => $useragent,
+            'platformVersion' => $info->Version(),
+            'clientName' => 'MollomPHP',
+            'clientVersion' => 'Unknown',
+        );
 
-		return $data;
-	}
+        return $data;
+    }
 
-	/** 
-	 * Send the request to Mollom. Must return the result in the format 
-	 * prescribed by the Mollom base class.
-	 *
-	 * @param string $method
-	 * @param string $server
-	 * @param string $path,
-	 * @param string $data
-	 * @param array $headers
-	 */
-	protected function request($method, $server, $path, $query = NULL, array $headers = array()) {
-		// if the user has turned on debug mode in the Config API, change the 
-		// server to the dev version
-		if(Config::inst()->get('Mollom', 'dev')) {
-			$server = 'http://' . 'dev.mollom.com' . '/' . Mollom::API_VERSION;
-		}
-		else {	// Mollom authentication headers should not be sent to the dev endpoint
-			// CURLOPT_HTTPHEADER expects all headers as values:
-			// @see http://php.net/manual/function.curl-setopt.php
-			foreach ($headers as $name => &$value) {
-				$value = $name . ': ' . $value;
-			}
-		}
+    /** 
+     * Send the request to Mollom. Must return the result in the format 
+     * prescribed by the Mollom base class.
+     *
+     * @param string $method
+     * @param string $server
+     * @param string $path,
+     * @param string $data
+     * @param array $headers
+     */
+    protected function request($method, $server, $path, $query = null, array $headers = array())
+    {
+        // if the user has turned on debug mode in the Config API, change the 
+        // server to the dev version
+        if (Config::inst()->get('Mollom', 'dev')) {
+            $server = 'http://' . 'dev.mollom.com' . '/' . Mollom::API_VERSION;
+        } else {    // Mollom authentication headers should not be sent to the dev endpoint
+            // CURLOPT_HTTPHEADER expects all headers as values:
+            // @see http://php.net/manual/function.curl-setopt.php
+            foreach ($headers as $name => &$value) {
+                $value = $name . ': ' . $value;
+            }
+        }
 
-		$ch = curl_init();
+        $ch = curl_init();
 
-		// Compose the Mollom endpoint URL.
-		$url = $server . '/' . $path;
-		
-		if (isset($query) && $method == 'GET') {
-			$url .= '?' . $query;
-		}
-		
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-		
-		// Prevent API calls from taking too long.
-		// Under normal operations, API calls may time out for Mollom users without
-		// a paid subscription.
-		curl_setopt($ch, CURLOPT_TIMEOUT, $this->requestTimeout);
+        // Compose the Mollom endpoint URL.
+        $url = $server . '/' . $path;
+        
+        if (isset($query) && $method == 'GET') {
+            $url .= '?' . $query;
+        }
+        
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        
+        // Prevent API calls from taking too long.
+        // Under normal operations, API calls may time out for Mollom users without
+        // a paid subscription.
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->requestTimeout);
 
-		if ($method == 'POST') {
-			curl_setopt($ch, CURLOPT_POST, TRUE);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
-		}
-		else {
-			curl_setopt($ch, CURLOPT_HTTPGET, TRUE);
-		}
+        if ($method == 'POST') {
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+        } else {
+            curl_setopt($ch, CURLOPT_HTTPGET, true);
+        }
 
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($ch, CURLOPT_HEADER, TRUE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, true);
 
-		// Execute the HTTP request.
-		if ($raw_response = curl_exec($ch)) {
-			// Split the response headers from the response body.
-			list($raw_response_headers, $response_body) = explode("\r\n\r\n", $raw_response, 2);
+        // Execute the HTTP request.
+        if ($raw_response = curl_exec($ch)) {
+            // Split the response headers from the response body.
+            list($raw_response_headers, $response_body) = explode("\r\n\r\n", $raw_response, 2);
 
-			// Parse HTTP response headers.
-			// @see http_parse_headers()
-			$raw_response_headers = str_replace("\r", '', $raw_response_headers);
-			$raw_response_headers = explode("\n", $raw_response_headers);
-			$message = array_shift($raw_response_headers);
-			$response_headers = array();
-			
-			foreach ($raw_response_headers as $line) {
-				list($name, $value) = explode(': ', $line, 2);
-				// Mollom::handleRequest() expects response header names in lowercase.
-				$response_headers[strtolower($name)] = $value;
-			}
+            // Parse HTTP response headers.
+            // @see http_parse_headers()
+            $raw_response_headers = str_replace("\r", '', $raw_response_headers);
+            $raw_response_headers = explode("\n", $raw_response_headers);
+            $message = array_shift($raw_response_headers);
+            $response_headers = array();
+            
+            foreach ($raw_response_headers as $line) {
+                list($name, $value) = explode(': ', $line, 2);
+                // Mollom::handleRequest() expects response header names in lowercase.
+                $response_headers[strtolower($name)] = $value;
+            }
 
-			$info = curl_getinfo($ch);
-			$response = array(
-				'code' => $info['http_code'],
-				'message' => $message,
-				'headers' => $response_headers,
-				'body' => $response_body,
-			);
-		}
-		else {
-			$response = array(
-				'code' => curl_errno($ch),
-				'message' => curl_error($ch),
-				'body' => null
-			);
-		}
+            $info = curl_getinfo($ch);
+            $response = array(
+                'code' => $info['http_code'],
+                'message' => $message,
+                'headers' => $response_headers,
+                'body' => $response_body,
+            );
+        } else {
+            $response = array(
+                'code' => curl_errno($ch),
+                'message' => curl_error($ch),
+                'body' => null
+            );
+        }
 
-		curl_close($ch);
+        curl_close($ch);
 
-		return (object) $response;
-	}
+        return (object) $response;
+    }
 
-	/**
-	 * Return the Field that we will use in this protector.
-	 * 
-	 * @param string $name
-	 * @param string $title
-	 * @param mixed $value
-	 * @return MollomField
-	 */
-	public function getFormField($name = "MollomField", $title = "Captcha", $value = null) {		
-		$field = new MollomField($name, $title, $value);
-		$field->setFieldMapping($this->fieldMapping);
-		return $field;
-	}
+    /**
+     * Return the Field that we will use in this protector.
+     * 
+     * @param string $name
+     * @param string $title
+     * @param mixed $value
+     * @return MollomField
+     */
+    public function getFormField($name = "MollomField", $title = "Captcha", $value = null)
+    {
+        $field = new MollomField($name, $title, $value);
+        $field->setFieldMapping($this->fieldMapping);
+        return $field;
+    }
 
-	public function setFieldMapping($fieldMapping) {
-		$this->fieldMapping = $fieldMapping;
-	}
-
+    public function setFieldMapping($fieldMapping)
+    {
+        $this->fieldMapping = $fieldMapping;
+    }
 }
