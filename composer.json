@@ -15,5 +15,6 @@
 	"require": {
 		"silverstripe/spamprotection": "dev-master",
 		"mollom/client": "dev-master"
-	}
+	},
+	"license": "BSD-3-Clause"
 }
